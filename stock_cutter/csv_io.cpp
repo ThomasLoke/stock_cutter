@@ -195,16 +195,16 @@ void csv_io::writesolution(const vector<int>& xv, const vector<pttn>& S) {
 		}
 	}
 	cells.assign(M + 1, "");
-	cells[0] = "Order quantity required";
+	cells[0] = "Order quantity supplied";
 	for (j = 0; j < M; ++j) {
-		cells[j + 1] = to_string(qv[j]);
+		cells[j + 1] = to_string(qvs[j]);
 	}
 	line = merge_cells(cells);
 	ofile << line << endl;
 	cells.assign(M + 1, "");
-	cells[0] = "Order quantity supplied";
+	cells[0] = "Order quantity required";
 	for (j = 0; j < M; ++j) {
-		cells[j + 1] = to_string(qvs[j]);
+		cells[j + 1] = to_string(qv[j]);
 	}
 	line = merge_cells(cells);
 	ofile << line << endl;
@@ -214,4 +214,6 @@ void csv_io::writesolution(const vector<int>& xv, const vector<pttn>& S) {
 	cells.assign(M + 1, "-");
 	line = merge_cells(cells);
 	ofile << line << endl;
+	// Blank line
+	ofile << "," << endl;
 }
