@@ -3,9 +3,9 @@
 #include "solver.h"
 #include "CoinPackedVector.hpp"
 #include "CbcModel.hpp"
-/*#include "CbcCompareDepth.hpp"
-#include "CbcCompareObjective.hpp"
-#include "CbcCompareEstimate.hpp"*/
+//#include "CbcCompareDepth.hpp"
+//#include "CbcCompareObjective.hpp"
+//#include "CbcCompareEstimate.hpp"
 using namespace std;
 
 solver::solver(void) {
@@ -63,7 +63,7 @@ void solver::run(std::vector<int>& xv, double& objv) {
 	// Shoves solver into the CBC model
 	CbcModel model(*sb);
 	// Run CBC model
-	/*CbcCompareObjective ccd;
+	/*CbcCompareEstimate ccd;
 	model.setNodeComparison(ccd);*/
 	model.branchAndBound();
 	bool optimal = model.isProvenOptimal();
