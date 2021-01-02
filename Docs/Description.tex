@@ -1,0 +1,76 @@
+\documentclass[12pt, a4paper]{article}
+\setlength{\oddsidemargin}{0.5cm}
+\setlength{\evensidemargin}{0.5cm}
+\setlength{\topmargin}{-1.6cm}
+\setlength{\leftmargin}{0.5cm}
+\setlength{\rightmargin}{0.5cm}
+\setlength{\textheight}{24.00cm} 
+\setlength{\textwidth}{15.00cm}
+\parindent 0pt
+\parskip 5pt
+\pagestyle{plain}
+
+\usepackage{graphicx}
+\usepackage{appendix,amsmath,amssymb,amsthm,bbm,graphicx,nccmath,subfigure}
+
+\title{\textbf{The cutting stock problem}}
+\author{Thomas Loke}
+\date{February 4, 2016}
+
+\begin{document}
+
+\maketitle
+
+Suppose we have $M$ orders, each respectively requiring $q_j$ for $j = 1,\ldots,M$ pieces. Suppose we have constructed a list of all possible combinations of patterns (say $N$ of them, each with associated cost $c_i$), with each pattern used $x_i$ for $i = 1,\ldots,N$ times. The linear IP (integer program) is then:
+
+\begin{eqnarray}
+& \mbox{min} \displaystyle\sum_{i=1}^{N} c_i x_i & \\
+& \mbox{s.t.} \displaystyle\sum_{i=1}^{N} a_{ji} x_i \geq q_j \mbox{  } & \forall \mbox{ } j = 1,\ldots,M \\
+& x_i \in \mathbb{Z}_{\geq 0} & \forall \mbox{ } i = 1,\ldots,N
+\end{eqnarray}
+
+where $a_{ji}$ is the number of times order $j$ appears in pattern $i$. \\
+
+Suppose that the stock material is of length $L$, and that order $j$ is for a piece of length $L_j$. Then in pattern $i$, the amount of length used is $ \bar{c}_i = \displaystyle\sum_{j=1}^{M} a_{ij} L_j $. If we want to minimize the number of utilised stock items, then we set $c_i = 1$ - otherwise, we minimize the total length wasted by setting $c_i = L - \bar{c}_i$. \\
+
+The constraint on patterns is:
+
+\begin{equation}
+\bar{c}_i = \displaystyle\sum_{j=1}^{M} a_{ij} L_j \leq L
+\end{equation}
+
+In order to minimize wastage (and to reduce problem size), we want to construct only maximal patterns, that is, patterns that cannot be filled with any additional orders. Mathematically, this gives the constraint:
+
+\begin{equation}
+L - \bar{c}_i = L - \displaystyle\sum_{j=1}^{M} a_{ij} L_j < L_{min}
+\end{equation}
+
+where $L_{min} = \mbox{min}(L_1,\ldots,L_M) $
+
+Putting these two constraints together gives the bound:
+
+\begin{equation}
+L - L_{min} < \bar{c}_i \leq L
+\end{equation}
+
+or, expressed equivalently,
+
+\begin{equation}
+0 \leq L - \bar{c}_i < L_{min}
+\end{equation}
+
+Suppose we have a given pattern $P$. Then we denote the number of times order $j$ appears in the pattern $P$ by $a_j(P)$. The pattern generation algorithm is as follows:
+
+\begin{enumerate}
+	\item To minimize memory usage, sort the orders such that $ L_1 \geq \ldots \geq L_M  $, so $L_{min} = L_M$.
+	\item Initialize two sets $\bar{S} = \{ P_0 \}$ and $S = \emptyset$, where $\bar{S}$ is the set of non-maximal patterns, $S$ is the set of maximal patterns, and $P_0$ is the starting (empty) pattern $P_0 = \{ 0,\ldots,0 \}$ (of length $M$) with associated cost $c(P_0) = L$, or written otherwise, $a_j(P_0) = 0$ for $j = 1,\ldots,M$. Now set $j = 1$.
+	\item For every pattern $P \in \bar{S}$ (at this fixed point in the algorithm):
+	\begin{enumerate}
+		\item Compute the maximal number of integer additions of order $j$ to $P$, i.e. $a_j^{max}(P) = \lfloor c(P)/L_j \rfloor$.
+		\item If $j \neq M$, then do the following, otherwise skip to (c). Define new patterns $P'$ with same parameters as $P$, with $a_j(P') \in \mathbb{Z}_{\geq 0}$ in the range $ 1 \leq a_j(P') \leq a_j^{max}(P)-1 $, and compute the corresponding costs $ c(P') = c(P) - L_j a_j(P')$. Add all possible $P'$ to the set $\bar{S}$.
+		\item Define the final new pattern $P'$ with same parameters as $P$ with $a_j(P') = a_j^{max}(P)$, and associated cost $ c(P') = c(P) - L_j a_j(P') $. If $c(P') < L_{min}$, then add $P'$ to $S$, otherwise add it to $\bar{S}$ (if $j \neq M$).
+	\end{enumerate}
+	\item If $j \neq M$, then set $j \leftarrow j+1$ and run step 3 again, otherwise terminate the algorithm with the set $S$ as the set of maximal patterns and $N = |S|$.
+\end{enumerate}
+
+\end{document}
